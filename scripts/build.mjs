@@ -1,0 +1,16 @@
+import {readFile, writeFile, mkdir} from 'node:fs/promises';
+const root = new URL('../', import.meta.url);
+const read = path => readFile(new URL(path, root), 'utf8');
+await mkdir(new URL('lib/', root), {recursive: true});
+const font = await readFile(new URL('assets/Saira.ttf', root));
+const css = (await read('src/style.css')).replace('__SAIRA_DATA__', font.toString('base64'));
+const core = (await read('src/core.mjs')).replace(/^export /gm, '');
+const motion = (await read('src/motion.mjs')).replace(/^export /gm, '');
+const composer = (await read('src/composer.mjs')).replace(/^export /gm, '');
+const closing = (await read('src/closing.mjs')).replace(/^export /gm, '');
+const ui = (await read('src/ui.mjs')).replace(/^import .*;\r?\n/gm, '').replace(/^export /gm, '');
+const entry = (await read('src/client.mjs')).replace(/^import .*;\r?\n/gm, '').replace(/^export /gm, '');
+const {version} = JSON.parse(await read('package.json'));
+const output = `/* DSH Endfield reasoning slider ${version} | MIT | see THIRD_PARTY_NOTICES.md */\nwindow.__ModuleLoader__.load({\n id: 'dsh-endfield-reasoning-slider',\n factory: require => {\n const React = require('react');\n const ReactDOM = require('react-dom');\n const CSS = ${JSON.stringify(css)};\n${core}\n${motion}\n${composer}\n${closing}\n${ui}\n${entry}\n return {apply, inject};\n }\n});\n`;
+await writeFile(new URL('lib/client.js', root), output);
+console.log(`Built lib/client.js (${Math.round(Buffer.byteLength(output) / 1024)} KiB; bundled Saira font).`);

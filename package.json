@@ -1,0 +1,57 @@
+{
+  "name": "dsh-endfield-reasoning-slider",
+  "version": "0.8.2",
+  "private": true,
+  "description": "DSH Web 输入区域与模型推理滑条，按提供方和模型记忆档位",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "assets/Saira-OFL.txt",
+    "README.md",
+    "VALIDATION.md",
+    "CHANGELOG.md",
+    "scripts/install-profile.mjs",
+    "install.cmd",
+    "uninstall.cmd"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/core.test.mjs test/installer.test.mjs",
+    "preview": "node scripts/preview-server.mjs",
+    "test:browser": "node test/browser.mjs",
+    "test:motion": "node test/motion.browser.mjs",
+    "test:composer": "node test/composer.browser.mjs",
+    "test:panel": "node test/panel-opening.browser.mjs",
+    "test:live": "node test/live-host.mjs",
+    "pack:local": "node scripts/package.mjs",
+    "test:close": "node test/panel-closing.browser.mjs",
+    "test:contract": "node --test test/host-contract.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  },
+  "devDependencies": {
+    "playwright": "1.62.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  }
+}
