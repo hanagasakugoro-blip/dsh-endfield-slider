@@ -373,7 +373,6 @@ uninstall.cmd              默认 Web profile 卸载入口
 - **目标宿主**：[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)。
 - **模型目录与槽位接入参考**：[Bai-2008/a-better-dsh-codex-effort-slider](https://github.com/Bai-2008/a-better-dsh-codex-effort-slider)，相关上游版权声明保留在 LICENSE 中。
 - **终末地风格设计指引**：[hhikr/endfield-ui-skill](https://github.com/hhikr/endfield-ui-skill)，为排版、配色、组件和动效设计提供参考。
-- **README 组织与写法参考**：[Bai-2008/a-better-dsh-codex-effort-slider](https://github.com/Bai-2008/a-better-dsh-codex-effort-slider) 与 [ABING1111/dsh-codex-model-effort-selector](https://github.com/ABING1111/dsh-codex-model-effort-selector)。
 - **许可**：代码采用 [MIT License](LICENSE)，Saira 字体采用 [SIL Open Font License 1.1](assets/Saira-OFL.txt)。
 
 本项目与鹰角网络、《明日方舟：终末地》无官方关联，不包含游戏素材、标志或官方字体。
