@@ -3,6 +3,8 @@
 > 给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）用的 **终末地风格模型与推理等级选择器**。
 > 从输入框上的一枚模型按钮，打开提供方、模型列表和推理滑条，搭配工业面板排版、粒子转场与通行证风格输入框。
 
+适用于 **Windows 桌面浏览器中的 DSH Web**，默认安装到 `web` profile。DSH Desktop 专用 profile 尚未验证。
+
 [![version](https://img.shields.io/badge/version-0.8.2-blue?style=flat-square)](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/releases/tag/v0.8.2)
 ![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-5b6ef5?style=flat-square)
 ![platform](https://img.shields.io/badge/platform-Windows-0078d4?style=flat-square)
@@ -33,16 +35,16 @@
 ### 模型与推理等级
 
 - **一个入口**：替换输入区的模型按钮，在同一个面板中浏览提供方、搜索模型、调整推理等级。
-- **真实档位**：模型有几档就显示几档，名称和取值以宿主元数据为准。没有推理元数据的模型仍可选择，不显示可调滑条。
+- **档位来自宿主**：名称和取值以模型的推理元数据为准；宿主未声明默认强度时，额外提供“提供方默认”选项，将强度选择交给宿主。没有推理元数据的模型仍可选择，不显示可调滑条。
 - **连续跟手**：拖动时滑块可停在任意两档之间，松手吸附到最近档位并保存；点击档位时平滑移动到目标位置。
-- **逐模型记忆**：以提供方和模型的组合作为标识，切回已使用的模型时恢复上次档位；没有有效记忆时沿用宿主默认设置。
+- **逐模型记忆**：以提供方和模型的组合作为标识。首次打开保留 DSH 当前设置；切回已使用的模型时恢复有效记忆，切换到未记录的模型时采用宿主默认设置。
 - **保存有反馈**：区分预览、保存中、保存成功与失败。宿主确认成功后才更新记忆，失败时提示原因并恢复宿主值。
 
 ### 终末地风格界面
 
 - **工业面板排版**：荧黄、黑白块面、细线分区、切角按钮，配合列表编号与当前档位计数。
 - **模型按钮混色**：荧黄与米白／浅灰波浪动态混合，悬停和展开时渐显。
-- **面板开合**：打开时黑黄块从左向右覆盖，再伴随像素块和 halftone 圆点擦除；关闭时像素横条错层向右拉长并淡出。
+- **面板开合**：打开时黑黄块从左向右覆盖，再伴随像素块和网点擦除；关闭时像素横条错层向右拉长并淡出。
 - **选中确认**：切换成功时短促闪烁与震颤，让操作结果更明确。
 - **输入框装饰**：细侧带、挂孔、刻线和等高线呼应通行证元素；悬停、聚焦与发送具有对应反馈。
 - **深浅主题与减少动态效果**：跟随 DSH 主题；系统启用“减少动态效果”时关闭动画，保留静态布局和操作状态。
@@ -66,10 +68,18 @@
 
 将其解压到准备长期保留的目录。`-source.zip` 是开发源码包；普通安装使用上面的运行包。
 
+需要核对下载文件时，在 ZIP 所在目录运行下面的 PowerShell 命令，并将结果与同一 Release 中的 `SHA256SUMS.txt` 对照：
+
+```powershell
+Get-FileHash .\dsh-endfield-reasoning-slider-0.8.2.zip -Algorithm SHA256
+```
+
 ### 安装到 Web profile
 
+以下双击脚本使用默认 Web profile；自定义目录请使用后面的 Node.js 命令。
+
 1. 在解压后的目录双击 **`install.cmd`**。
-2. 等待脚本提示安装成功。
+2. 等待脚本执行结束。成功时窗口可能直接关闭，可按后面的步骤验证；需要查看完整输出时使用 PowerShell 命令。
 3. 刷新 DSH Web；如果宿主仍未加载插件，再重启 DSH。
 4. 点击输入框上的模型按钮，确认出现“模型与推理”面板。
 
@@ -79,11 +89,13 @@
 node scripts/install-profile.mjs
 ```
 
-默认目标为当前用户的 **`.dsh/profiles/web`**。使用自定义 Web profile 时，显式传入路径：
+默认目标为当前用户主目录下的 **`.dsh/profiles/web`**。使用自定义 Web profile 时，显式传入路径：
 
 ```powershell
 node scripts/install-profile.mjs --profile-path "你的 Web profile 完整路径"
 ```
+
+`install.cmd` 和 `uninstall.cmd` 不转发命令行参数；自定义 profile 请直接运行 `node scripts/install-profile.mjs` 并传入 `--profile-path`。
 
 安装器会备份 profile 配置，添加本插件的 `link:` 依赖和 bundle，再创建目录链接并校验。其他插件、皮肤条目和配置会保留，备份位于插件目录的 `backups/`。
 
@@ -114,11 +126,20 @@ node scripts/install-profile.mjs --profile-path "你的 Web profile 完整路径
 
 ### 升级
 
+默认 Web profile：
+
 1. 在旧插件目录运行 `uninstall.cmd`。
 2. 将新版运行包解压到准备保留的目录，再运行其中的 `install.cmd`。
 3. 刷新 DSH Web；必要时重启 DSH。
 
-使用自定义 profile 时，卸载和安装都需要传入同一个 `--profile-path`。同一浏览器来源下保存的模型记忆可继续使用。
+自定义 Web profile 请使用以下命令，将占位内容替换为实际绝对路径；卸载和安装的 profile 路径必须相同：
+
+```powershell
+node "<旧插件目录>/scripts/install-profile.mjs" --uninstall --profile-path "<Web profile 完整路径>"
+node "<新插件目录>/scripts/install-profile.mjs" --profile-path "<Web profile 完整路径>"
+```
+
+同一浏览器来源下保存的模型记忆可继续使用。
 
 ### 卸载
 
@@ -134,7 +155,7 @@ node scripts/install-profile.mjs --uninstall
 node scripts/install-profile.mjs --uninstall --profile-path "你的 Web profile 完整路径"
 ```
 
-卸载器只移除本插件的依赖、bundle 和已验证的目录链接。刷新 DSH 后恢复宿主模型入口，其他皮肤和插件保留。
+卸载器只移除本插件的依赖、bundle 和已验证的目录链接。刷新 DSH 后，本插件不再接管模型入口，其他皮肤和插件保留。
 
 ## 兼容性与已知限制
 
@@ -145,7 +166,7 @@ node scripts/install-profile.mjs --uninstall --profile-path "你的 Web profile 
 | 默认 profile | `web`；DSH Desktop 专用 profile 尚未验证 |
 | 主题 | 跟随 DSH 的深浅主题 |
 | 运行时依赖 | React 由 DSH 提供，客户端和字体已打包，安装时不需额外下载 npm 依赖 |
-| 模型与档位 | 读取宿主目录，仅显示宿主实际提供的数据 |
+| 模型与档位 | 读取宿主目录与推理元数据；“提供方默认”表示让宿主决定强度 |
 | 设置作用范围 | 下一次请求；逐模型记忆保存在浏览器当前来源的 localStorage |
 
 - 本插件接管 `conversation.input.model` 单槽，原模型按钮入口由本插件面板替代；同时替换该位置的其他选择器可能与它冲突。
@@ -174,11 +195,11 @@ node scripts/install-profile.mjs --uninstall --profile-path "你的 Web profile 
 
 ### 为什么某个模型没有推理滑条，或者档位数量不同？
 
-可调档位由当前模型的元数据决定。模型未提供推理元数据时不显示可调滑条；只有一个有效档位时无法继续调节。显示的“提供方默认”由宿主元数据决定，提交时会省略具体的 `reasoningEffort`。
+可调档位由当前模型的元数据决定。模型未提供推理元数据时不显示可调滑条；只有一个有效选项时无法继续调节。宿主未声明默认强度时，界面会额外提供“提供方默认”；选择它时会省略 `reasoningEffort`，由宿主决定强度，因此界面选项数可能比显式档位数多一个。
 
-### 切换模型后，为什么不是统一落在中间档？
+### 切换模型后，推理等级如何确定？
 
-插件优先恢复该提供方和模型的有效记忆；没有有效记忆时使用宿主默认设置。每个模型分别记录。
+首次打开面板时保留 DSH 当前设置。切换模型时优先恢复该提供方和模型的有效记忆；没有有效记忆时使用宿主默认设置。每个模型分别记录。
 
 ### 如何清空模型记忆？
 
@@ -196,7 +217,9 @@ localStorage.removeItem('dsh.endfield.reasoning.v1')
 
 ## 开发与预览
 
-获取源码后，在项目目录运行：
+请使用仓库源码，或下载 [0.8.2 开发源码包](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/releases/download/v0.8.2/dsh-endfield-reasoning-slider-0.8.2-source.zip) 并解压。运行包不含完整开发文件，不能用于以下预览流程。
+
+打开 PowerShell，进入包含 `package.json`、`package-lock.json` 和 `src/` 的源码根目录，再执行：
 
 ```powershell
 npm ci
@@ -210,12 +233,29 @@ npm run preview
 
 开发依赖为 React、React DOM 和 Playwright。预览可选读取当前用户已安装的 maid 皮肤样式，未安装该皮肤也可使用。
 
+首次 `npm ci` 通常需要联网下载开发依赖。预览的输入框外观可能因本机是否加载其他皮肤而与截图不同。
+
+如果启动时提示端口已被占用，可在 PowerShell 中指定其他端口：
+
 ```powershell
-npm test                 # 核心与隔离安装器检查，12 项，不调用模型
-npm run test:contract    # 已安装 DSH 的目录接口契约检查，需配置宿主路径
+$env:PORT = '3087'
+npm run preview
 ```
 
-`test:contract` 需要设置 `DSH_EF_HOST_MODULES`，指向已安装 DSH 的 `node_modules/@deepseek-ai` 目录。已有浏览器专项脚本需要本机 Google Chrome；具体环境变量与加载逻辑见 `scripts/dev-runtime.mjs`。
+随后在同一台电脑打开终端打印的地址，例如 `http://127.0.0.1:3087/`。
+
+```powershell
+npm test                 # 核心与隔离安装器检查，12 项，不调用模型
+```
+
+可选的宿主契约检查需要本机安装相应版本的 DSH。先将下方路径替换为其实际的 `node_modules/@deepseek-ai` 目录，再运行：
+
+```powershell
+$env:DSH_EF_HOST_MODULES = '<DSH 安装目录>/node_modules/@deepseek-ai'
+npm run test:contract
+```
+
+已有浏览器专项脚本需要本机 Google Chrome；相关依赖加载见 `scripts/dev-runtime.mjs`，预览端口设置见 `scripts/preview-server.mjs`。
 
 `npm run build` 将 `src/` 模块、局部 CSS 和 Saira 字体合并为 `lib/client.js`。修改源码后重新构建，再刷新或重启宿主加载。
 
