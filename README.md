@@ -251,7 +251,7 @@ scripts/
   package.mjs              打发布包
 test/                      测试
 assets/                    字体和许可证
-docs/                      截图、发布说明和测试记录
+docs/                      实现说明、问题记录、截图和发布说明
 cordis.patch.yml           把插件加入 profile 的组合配置
 install.cmd                安装到默认 Web profile
 uninstall.cmd              从默认 Web profile 卸载
@@ -259,10 +259,9 @@ uninstall.cmd              从默认 Web profile 卸载
 
 ## 相关文档
 
-- [CHANGELOG.md](CHANGELOG.md)：每个版本改了什么。
-- [VALIDATION.md](VALIDATION.md)：在哪个环境、测过哪些部分。
-- [发布准备记录](docs/release-preparation.md)：0.8.2 的构建和检查结果。
-- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)：参考项目和第三方许可。
+- [实现说明](docs/ARCHITECTURE.md)：模型接入、滑条保存、弹窗和输入框动效的实现。
+- [问题记录](docs/INCIDENTS.md)：遇到过的问题、原因和修复过程。
+- [更新日志](CHANGELOG.md)：每个版本改了什么。
 
 ## 致谢与许可
 
@@ -270,6 +269,6 @@ uninstall.cmd              从默认 Web profile 卸载
 - [Bai-2008/a-better-dsh-codex-effort-slider](https://github.com/Bai-2008/a-better-dsh-codex-effort-slider)：模型目录和槽位接入参考了这个项目，相关版权声明保留在 LICENSE 中。
 - [hhikr/endfield-ui-skill](https://github.com/hhikr/endfield-ui-skill)：终末地风格的排版、配色和动效参考。
 
-代码采用 [MIT License](LICENSE)。Saira 字体采用 [SIL Open Font License 1.1](assets/Saira-OFL.txt)。
+代码采用 [MIT License](LICENSE)。Saira 字体采用 [SIL Open Font License 1.1](assets/Saira-OFL.txt)。第三方来源与许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 本项目与鹰角网络、《明日方舟：终末地》无官方关联，不包含游戏素材、标志或官方字体。
