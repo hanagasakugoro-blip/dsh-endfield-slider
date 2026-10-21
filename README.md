@@ -10,9 +10,9 @@
 ![platform](https://img.shields.io/badge/platform-Windows-0078d4?style=flat-square)
 [![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-![模型与推理面板和输入框的实际渲染预览](docs/screenshots/desktop-panel.png)
+![模型与推理面板和输入框的实际渲染截图](docs/screenshots/desktop-panel.png)
 
-截图由本项目客户端在独立预览页实际渲染，使用演示模型目录。安装到 DSH 后，模型名称与推理档位来自宿主。
+截图由本项目客户端实际渲染，使用演示模型目录。安装到 DSH 后，模型名称与推理档位来自宿主。
 
 **[下载最新版本](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/releases/latest)** · [安装说明](#安装) · [使用方法](#使用) · [问题反馈](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/issues)
 
@@ -24,7 +24,7 @@
 - [升级与卸载](#升级与卸载)
 - [兼容性与已知限制](#兼容性与已知限制)
 - [常见问题](#常见问题)
-- [开发与预览](#开发与预览)
+- [开发](#开发)
 - [打包](#打包)
 - [项目结构](#项目结构)
 - [文档](#文档)
@@ -215,49 +215,54 @@ localStorage.removeItem('dsh.endfield.reasoning.v1')
 
 在系统辅助功能设置中启用“减少动态效果”。插件会停止动画并保留静态界面与完整操作功能。
 
-## 开发与预览
+## 开发
 
-请使用仓库源码，或下载 [0.8.2 开发源码包](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/releases/download/v0.8.2/dsh-endfield-reasoning-slider-0.8.2-source.zip) 并解压。运行包不含完整开发文件，不能用于以下预览流程。
+需要 **Node.js 22 或更高版本**。使用仓库源码，或下载 [0.8.2 开发源码包](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/releases/download/v0.8.2/dsh-endfield-reasoning-slider-0.8.2-source.zip) 并解压，在包含 `package.json` 和 `src/` 的源码根目录运行以下命令。
 
-打开 PowerShell，进入包含 `package.json`、`package-lock.json` 和 `src/` 的源码根目录，再执行：
+### 构建与默认检查
+
+这几项只使用 Node.js 内置模块，**无需先执行 `npm install` 或 `npm ci`**：
 
 ```powershell
-npm ci
+# 将 src/ 模块、CSS 和 Saira 字体构建为客户端
 npm run build
-npm run preview
+
+# 检查构建后的客户端语法
+node --check lib/client.js
+
+# 核心逻辑与隔离安装器检查，共 12 项
+npm test
 ```
 
-上述命令会在你自己的电脑上启动本地预览服务。保持终端运行，再用同一台电脑的浏览器打开 `http://127.0.0.1:3086/`。
+源码与产物的关系：
 
-**这是本地开发地址，不是在线演示链接。** 其他人需要先获取源码并运行上述命令，才能在各自电脑上预览。预览使用模拟宿主和演示模型；真实 DSH 的目录读取与参数写回需在宿主中验证。
+| 位置 | 用途 |
+| --- | --- |
+| `src/core.mjs` | 宿主目录接入、档位选择与逐模型记忆 |
+| `src/ui.mjs` | 模型面板、搜索、滑条与键盘操作 |
+| `src/style.css` | 本插件与输入区域的样式 |
+| `src/motion.mjs`、`src/closing.mjs`、`src/composer.mjs` | 交互动效、面板关闭与输入框反馈 |
+| `src/client.mjs` | 客户端服务与槽位接线 |
+| `lib/client.js` | 构建产物，修改上面的源码后重新生成 |
+| `lib/index.js` | 宿主侧插件入口 |
 
-开发依赖为 React、React DOM 和 Playwright。预览可选读取当前用户已安装的 maid 皮肤样式，未安装该皮肤也可使用。
+默认 `npm test` 包含两部分：
 
-首次 `npm ci` 通常需要联网下载开发依赖。预览的输入框外观可能因本机是否加载其他皮肤而与截图不同。
+- `test/core.test.mjs`：验证宿主档位、默认值、逐模型记忆、目录访问和保存失败处理。
+- `test/installer.test.mjs`：在隔离 profile 中执行安装与卸载，验证目录链接及原有皮肤、配置的保留。
 
-如果启动时提示端口已被占用，可在 PowerShell 中指定其他端口：
+这些默认检查不需要运行 DSH，不发起模型推理请求。修改源码后先重新构建，再刷新或重启实际使用的 DSH 加载新客户端。
 
-```powershell
-$env:PORT = '3087'
-npm run preview
-```
+### 可选：宿主契约检查
 
-随后在同一台电脑打开终端打印的地址，例如 `http://127.0.0.1:3087/`。
-
-```powershell
-npm test                 # 核心与隔离安装器检查，12 项，不调用模型
-```
-
-可选的宿主契约检查需要本机安装相应版本的 DSH。先将下方路径替换为其实际的 `node_modules/@deepseek-ai` 目录，再运行：
+这项检查读取本机已安装 DSH 的模型目录实现，验证模型选择参数的传递。需要相应版本的 DSH，并将下方路径替换为其实际的 `node_modules/@deepseek-ai` 目录：
 
 ```powershell
 $env:DSH_EF_HOST_MODULES = '<DSH 安装目录>/node_modules/@deepseek-ai'
 npm run test:contract
 ```
 
-已有浏览器专项脚本需要本机 Google Chrome；相关依赖加载见 `scripts/dev-runtime.mjs`，预览端口设置见 `scripts/preview-server.mjs`。
-
-`npm run build` 将 `src/` 模块、局部 CSS 和 Saira 字体合并为 `lib/client.js`。修改源码后重新构建，再刷新或重启宿主加载。
+浏览器专项检查另需 `npm ci` 安装开发依赖及本机 Google Chrome，不包含在默认 `npm test` 中。已有验证范围见 [VALIDATION.md](VALIDATION.md)。
 
 ## 打包
 
@@ -271,7 +276,7 @@ npm run pack:local
 | 文件 | 用途 |
 | --- | --- |
 | `dsh-endfield-reasoning-slider-<版本>.zip` | 运行包，包含构建客户端、安装／卸载脚本与许可文件 |
-| `dsh-endfield-reasoning-slider-<版本>-source.zip` | 开发源码包，包含源码、锁文件、测试、预览和文档 |
+| `dsh-endfield-reasoning-slider-<版本>-source.zip` | 开发源码包，包含源码、锁文件、测试和文档 |
 | `SHA256SUMS.txt` | 两个 ZIP 的 SHA-256 校验值 |
 
 ## 项目结构
@@ -279,8 +284,7 @@ npm run pack:local
 ```text
 src/                       模型目录接入、面板、滑条、动效与输入框源码
 lib/                       DSH 插件入口与构建后的客户端
-scripts/                   构建、安装、卸载、打包与预览服务
-preview/                   模拟宿主与独立交互预览页
+scripts/                   构建、安装、卸载与打包脚本
 test/                      核心、安装器、宿主契约与浏览器专项检查
 assets/                    Saira 字体及其许可证
 docs/                      桌面截图、发布说明与准备记录
@@ -295,12 +299,13 @@ uninstall.cmd              默认 Web profile 卸载入口
 | --- | --- |
 | [CHANGELOG.md](CHANGELOG.md) | 版本变化 |
 | [VALIDATION.md](VALIDATION.md) | 已验证范围、环境与已知限制 |
-| [发布准备记录](docs/release-preparation.md) | 0.8.2 构建、12 项核心／安装器检查及桌面预览结果 |
+| [发布准备记录](docs/release-preparation.md) | 0.8.2 构建、12 项核心／安装器检查及桌面检查结果 |
 | [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) | 参考实现、字体与第三方许可说明 |
 
 ## 致谢与许可
 
 - 目标宿主：[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)。
 - 模型目录与槽位接入参考：[Bai-2008/a-better-dsh-codex-effort-slider](https://github.com/Bai-2008/a-better-dsh-codex-effort-slider)，相关上游版权声明已保留。
+- 界面风格与设计规范参考：[hhikr/endfield-ui-skill](https://github.com/hhikr/endfield-ui-skill)，提供终末地风格的排版、配色、组件与动效设计指引。
 - README 的章节组织与操作说明参考上述项目及 [ABING1111/dsh-codex-model-effort-selector](https://github.com/ABING1111/dsh-codex-model-effort-selector)。
 - 代码采用 [MIT License](LICENSE)；Saira 字体采用 [SIL Open Font License 1.1](assets/Saira-OFL.txt)。
