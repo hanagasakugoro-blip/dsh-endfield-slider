@@ -1,67 +1,202 @@
 # DSH 终末地推理滑条
 
-为 DSH Web 增加终末地风格的模型选择与推理等级面板，以及输入框装饰和操作反馈。
+> 给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）用的 **终末地风格模型与推理等级选择器**。
+> 从输入框上的一枚模型按钮，打开提供方、模型列表和推理滑条，搭配工业面板排版、粒子转场与通行证风格输入框。
 
-当前版本：**0.8.2**。面向 Windows 桌面端 DSH Web，已在 DSH **0.2.1-rc.2** 验证；其他版本尚未确认兼容性。项目与鹰角网络、《明日方舟：终末地》无官方关联，不包含游戏素材。
+[![version](https://img.shields.io/badge/version-0.8.2-blue?style=flat-square)](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/releases/tag/v0.8.2)
+![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-5b6ef5?style=flat-square)
+![platform](https://img.shields.io/badge/platform-Windows-0078d4?style=flat-square)
+[![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-## 界面预览
+![模型与推理面板和输入框的实际渲染预览](docs/screenshots/desktop-panel.png)
 
-![模型与推理面板，使用演示模型目录](docs/screenshots/desktop-panel.png)
+截图由本项目客户端在独立预览页实际渲染，使用演示模型目录。安装到 DSH 后，模型名称与推理档位来自宿主。
 
-截图来自独立演示页面，模型名称与档位仅用于展示。实际安装后读取 DSH 的真实目录。
+**[下载最新版本](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/releases/latest)** · [安装说明](#安装) · [使用方法](#使用) · [问题反馈](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/issues)
+
+## 目录
+
+- [功能](#功能)
+- [安装](#安装)
+- [使用](#使用)
+- [升级与卸载](#升级与卸载)
+- [兼容性与已知限制](#兼容性与已知限制)
+- [常见问题](#常见问题)
+- [开发与预览](#开发与预览)
+- [打包](#打包)
+- [项目结构](#项目结构)
+- [文档](#文档)
+- [致谢与许可](#致谢与许可)
 
 ## 功能
 
-- 按提供方浏览模型，只展示宿主提供的推理档位。
-- 连续拖动滑条，松手吸附最近档位；点击档位平滑移动，支持键盘操作。
-- 按提供方和模型分别记忆档位，宿主确认保存成功后才更新记忆；失败时提示并恢复。
-- 模型按钮动态混色，面板黑黄覆盖与粒子转场，选中确认反馈。
-- 输入框采用通行证风格的边角、侧带和等高线装饰，发送时给出即时反馈。
-- 支持深浅主题与系统“减少动态效果”，保留宿主原有发送、停止和禁用行为。
+### 模型与推理等级
+
+- **一个入口**：替换输入区的模型按钮，在同一个面板中浏览提供方、搜索模型、调整推理等级。
+- **真实档位**：模型有几档就显示几档，名称和取值以宿主元数据为准。没有推理元数据的模型仍可选择，不显示可调滑条。
+- **连续跟手**：拖动时滑块可停在任意两档之间，松手吸附到最近档位并保存；点击档位时平滑移动到目标位置。
+- **逐模型记忆**：以提供方和模型的组合作为标识，切回已使用的模型时恢复上次档位；没有有效记忆时沿用宿主默认设置。
+- **保存有反馈**：区分预览、保存中、保存成功与失败。宿主确认成功后才更新记忆，失败时提示原因并恢复宿主值。
+
+### 终末地风格界面
+
+- **工业面板排版**：荧黄、黑白块面、细线分区、切角按钮，配合列表编号与当前档位计数。
+- **模型按钮混色**：荧黄与米白／浅灰波浪动态混合，悬停和展开时渐显。
+- **面板开合**：打开时黑黄块从左向右覆盖，再伴随像素块和 halftone 圆点擦除；关闭时像素横条错层向右拉长并淡出。
+- **选中确认**：切换成功时短促闪烁与震颤，让操作结果更明确。
+- **输入框装饰**：细侧带、挂孔、刻线和等高线呼应通行证元素；悬停、聚焦与发送具有对应反馈。
+- **深浅主题与减少动态效果**：跟随 DSH 主题；系统启用“减少动态效果”时关闭动画，保留静态布局和操作状态。
 
 ## 安装
 
-需要已安装并初始化过 Web profile 的 DSH，以及可在终端运行的 **Node.js 22 或更高版本**。
+### 前置条件
 
-1. 从仓库 **Releases** 下载 `dsh-endfield-reasoning-slider-0.8.2.zip`。普通用户使用此运行包；源码包用于开发。
-2. 解压到准备长期保留的目录。不要直接在压缩包内运行。
-3. 双击 `install.cmd`，或在解压目录运行：
+| 项目 | 要求 |
+| --- | --- |
+| DSH | 已安装并初始化过 Web profile；已验证版本为 **0.2.1-rc.2** |
+| 平台 | Windows 桌面端 |
+| Node.js | **22 或更高版本**，用于执行安装／卸载脚本 |
+| 构建 | 运行包已包含客户端产物，安装时无需 `npm install` 或重新构建 |
 
-   ```powershell
-   node scripts/install-profile.mjs
-   ```
+### 下载运行包
 
-4. 安装成功后刷新 DSH Web；宿主未加载插件时再重启 DSH。
+打开 [Releases](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/releases)，下载运行包：
 
-默认 profile 位于当前用户的 `.dsh/profiles/web`。如使用自定义 profile：
+**[dsh-endfield-reasoning-slider-0.8.2.zip](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/releases/download/v0.8.2/dsh-endfield-reasoning-slider-0.8.2.zip)**
+
+将其解压到准备长期保留的目录。`-source.zip` 是开发源码包；普通安装使用上面的运行包。
+
+### 安装到 Web profile
+
+1. 在解压后的目录双击 **`install.cmd`**。
+2. 等待脚本提示安装成功。
+3. 刷新 DSH Web；如果宿主仍未加载插件，再重启 DSH。
+4. 点击输入框上的模型按钮，确认出现“模型与推理”面板。
+
+也可以在解压目录的 PowerShell 中执行：
+
+```powershell
+node scripts/install-profile.mjs
+```
+
+默认目标为当前用户的 **`.dsh/profiles/web`**。使用自定义 Web profile 时，显式传入路径：
 
 ```powershell
 node scripts/install-profile.mjs --profile-path "你的 Web profile 完整路径"
 ```
 
-安装器会先在插件目录的 `backups/` 保存 profile 配置备份，再添加本插件的依赖和 bundle，保留其他插件和皮肤。目录通过链接供 DSH 加载，**安装后不要移动或删除插件目录**。更新时可先卸载旧目录中的插件，再安装新目录。
+安装器会备份 profile 配置，添加本插件的 `link:` 依赖和 bundle，再创建目录链接并校验。其他插件、皮肤条目和配置会保留，备份位于插件目录的 `backups/`。
 
-运行包已包含构建产物，安装时无需执行 `npm install` 或重新构建。
+**安装后请保留插件目录及其位置。** DSH 通过该目录链接加载插件，直接移动或删除目录会影响加载。
 
-## 卸载
+## 使用
 
-在当时安装的插件目录中双击 `uninstall.cmd`，或运行：
+输入区的按钮显示当前模型与推理等级；点击后，上半部分用于选择提供方和模型，下半部分用于调整当前模型的推理等级。
+
+| 操作 | 结果 |
+| --- | --- |
+| 点击模型按钮 | 打开／关闭面板 |
+| 点击提供方 | 进入该提供方的模型列表，可搜索模型 |
+| 点击模型 | 切换模型，并恢复有效记忆或采用宿主默认档位 |
+| 拖动滑条 | 连续预览位置，松手吸附最近档位并保存一次 |
+| 轻点轨道 | 平滑移向点击位置，松手后保存最近档位 |
+| 点击档位文字 | 立即提交该档位，滑块平滑移到对应位置 |
+| 滑条聚焦后按方向键、`Home`／`End`、`PageUp`／`PageDown` | 调整预览，松开按键后保存 |
+| `Escape` | 依次取消未提交预览、返回提供方列表、关闭面板 |
+| `Tab`／`Shift+Tab` | 在面板控件间切换焦点 |
+| 点击面板外 | 关闭面板 |
+
+拖动期间不连续写入宿主，取消拖动或取消键盘预览不会保存。设置用于**下一次请求**，正在执行的请求沿用宿主规则。
+
+输入框的发送确认表示已发起发送操作，服务端结果仍由 DSH 展示。原有鼠标发送、快捷键、停止按钮和禁用状态保留。
+
+## 升级与卸载
+
+### 升级
+
+1. 在旧插件目录运行 `uninstall.cmd`。
+2. 将新版运行包解压到准备保留的目录，再运行其中的 `install.cmd`。
+3. 刷新 DSH Web；必要时重启 DSH。
+
+使用自定义 profile 时，卸载和安装都需要传入同一个 `--profile-path`。同一浏览器来源下保存的模型记忆可继续使用。
+
+### 卸载
+
+在当时安装的插件目录双击 **`uninstall.cmd`**，或执行：
 
 ```powershell
 node scripts/install-profile.mjs --uninstall
 ```
 
-自定义 profile 需要同时传入相同的 `--profile-path`。卸载只移除本插件的依赖与目录链接，保留其他插件、皮肤和模型记忆；随后刷新 DSH Web。
+自定义 profile 的卸载命令：
 
-模型记忆位于浏览器当前 DSH 来源的 localStorage。需要清空时，可在该页面开发者工具中执行：
+```powershell
+node scripts/install-profile.mjs --uninstall --profile-path "你的 Web profile 完整路径"
+```
+
+卸载器只移除本插件的依赖、bundle 和已验证的目录链接。刷新 DSH 后恢复宿主模型入口，其他皮肤和插件保留。
+
+## 兼容性与已知限制
+
+| 项目 | 说明 |
+| --- | --- |
+| 已验证宿主 | DSH Web **0.2.1-rc.2**；其他版本尚未确认 |
+| 已验证平台 | Windows 桌面端 |
+| 默认 profile | `web`；DSH Desktop 专用 profile 尚未验证 |
+| 主题 | 跟随 DSH 的深浅主题 |
+| 运行时依赖 | React 由 DSH 提供，客户端和字体已打包，安装时不需额外下载 npm 依赖 |
+| 模型与档位 | 读取宿主目录，仅显示宿主实际提供的数据 |
+| 设置作用范围 | 下一次请求；逐模型记忆保存在浏览器当前来源的 localStorage |
+
+- 本插件接管 `conversation.input.model` 单槽，原模型按钮入口由本插件面板替代；同时替换该位置的其他选择器可能与它冲突。
+- 样式集中在输入区域和本插件面板。其他皮肤若修改相同区域，仍可能产生覆盖差异。
+- 同一浏览器来源下的会话共享逐模型记忆；不同浏览器、域名或端口之间不共享。
+- DSH 的内部接口或输入框结构变化后，可能需要更新插件。
+- 项目与鹰角网络、《明日方舟：终末地》无官方关联，不包含游戏素材、标志或官方字体。
+
+## 常见问题
+
+### 安装时提示找不到 profile，怎么办？
+
+先确认已运行并初始化 DSH Web。脚本默认寻找当前用户的 `.dsh/profiles/web`；使用其他目录时传入 `--profile-path`。安装器需要目标目录中存在有效的 DSH profile 配置。
+
+### 安装成功，还是原来的模型按钮？
+
+确认安装的是当前 DSH 实际使用的 Web profile，再刷新页面；必要时重启 DSH。若已安装另一个模型选择器，也需要检查它是否占用了同一个模型槽位。
+
+### 安装器提示已有其他位置的插件，怎么办？
+
+先从原安装目录卸载，再安装新目录中的版本。安装器会检查链接归属，避免覆盖已有安装。
+
+### 模型列表为空，或者某个提供方加载失败？
+
+模型目录来自 DSH。先检查宿主中的提供方、账号和模型配置，并查看面板中的加载状态或错误提示。反馈问题时附上 DSH 版本与复现步骤，隐藏访问 token 和账号凭据。
+
+### 为什么某个模型没有推理滑条，或者档位数量不同？
+
+可调档位由当前模型的元数据决定。模型未提供推理元数据时不显示可调滑条；只有一个有效档位时无法继续调节。显示的“提供方默认”由宿主元数据决定，提交时会省略具体的 `reasoningEffort`。
+
+### 切换模型后，为什么不是统一落在中间档？
+
+插件优先恢复该提供方和模型的有效记忆；没有有效记忆时使用宿主默认设置。每个模型分别记录。
+
+### 如何清空模型记忆？
+
+在实际使用的 DSH 页面打开浏览器开发者工具，执行：
 
 ```js
 localStorage.removeItem('dsh.endfield.reasoning.v1')
 ```
 
+随后刷新页面。正常卸载会保留这份记忆，方便重装。
+
+### 可以关闭动画吗？
+
+在系统辅助功能设置中启用“减少动态效果”。插件会停止动画并保留静态界面与完整操作功能。
+
 ## 开发与预览
 
-在源码目录执行：
+获取源码后，在项目目录运行：
 
 ```powershell
 npm ci
@@ -69,29 +204,61 @@ npm run build
 npm run preview
 ```
 
-打开 <http://127.0.0.1:3086/>。该页面使用模拟宿主，不连接模型服务。预览可选读取当前用户已安装的 maid 皮肤样式；未安装该皮肤也可使用。
+打开 <http://127.0.0.1:3086/>。预览使用模拟宿主和演示模型，适合查看交互；真实 DSH 的目录读取与参数写回需在宿主中验证。
 
-开发依赖仅用于预览与验证：React、React DOM 和 Playwright。DSH 运行时提供 React；插件构建本身不需要下载依赖。
+开发依赖为 React、React DOM 和 Playwright。预览可选读取当前用户已安装的 maid 皮肤样式，未安装该皮肤也可使用。
 
 ```powershell
-npm test
+npm test                 # 核心与隔离安装器检查，12 项，不调用模型
+npm run test:contract    # 已安装 DSH 的目录接口契约检查，需配置宿主路径
+```
+
+`test:contract` 需要设置 `DSH_EF_HOST_MODULES`，指向已安装 DSH 的 `node_modules/@deepseek-ai` 目录。已有浏览器专项脚本需要本机 Google Chrome；具体环境变量与加载逻辑见 `scripts/dev-runtime.mjs`。
+
+`npm run build` 将 `src/` 模块、局部 CSS 和 Saira 字体合并为 `lib/client.js`。修改源码后重新构建，再刷新或重启宿主加载。
+
+## 打包
+
+```powershell
+npm run build
 npm run pack:local
 ```
 
-`npm test` 运行可独立执行的核心与安装器检查，不需要 DSH 实例或模型调用。`pack:local` 在 `dist/` 输出运行包、源码包和 `SHA256SUMS.txt`。
+产物输出到 `dist/`：
 
-高级宿主检查需要本机安装对应版本的 DSH，并通过 `DSH_EF_HOST_MODULES` 指向其 `node_modules/@deepseek-ai` 目录，然后执行 `npm run test:contract`。现有浏览器专项脚本需要本机 Google Chrome；本次发布准备仅验证桌面预览，未重新运行整套历史专项。
+| 文件 | 用途 |
+| --- | --- |
+| `dsh-endfield-reasoning-slider-<版本>.zip` | 运行包，包含构建客户端、安装／卸载脚本与许可文件 |
+| `dsh-endfield-reasoning-slider-<版本>-source.zip` | 开发源码包，包含源码、锁文件、测试、预览和文档 |
+| `SHA256SUMS.txt` | 两个 ZIP 的 SHA-256 校验值 |
 
-## 使用边界
+## 项目结构
 
-- 推理设置作用于下一次请求，不更改正在执行的请求。
-- 没有推理元数据的模型不会显示可调滑条，不自行生成推理预算或档位。
-- 档位记忆按浏览器来源保存；不同浏览器、域名或端口不共享。
-- 插件占用 `conversation.input.model` 单槽，同样替换该位置的插件可能与它冲突。
-- 未兼容 DSH 后续可能变化的内部接口。遇到问题请提供 DSH 版本、复现步骤与截图，避免附带访问 token 或凭据。
+```text
+src/                       模型目录接入、面板、滑条、动效与输入框源码
+lib/                       DSH 插件入口与构建后的客户端
+scripts/                   构建、安装、卸载、打包与预览服务
+preview/                   模拟宿主与独立交互预览页
+test/                      核心、安装器、宿主契约与浏览器专项检查
+assets/                    Saira 字体及其许可证
+docs/                      桌面截图、发布说明与准备记录
+cordis.patch.yml           插件组合层声明
+install.cmd                默认 Web profile 安装入口
+uninstall.cmd              默认 Web profile 卸载入口
+```
 
-## 许可与致谢
+## 文档
 
-代码使用 [MIT License](LICENSE)。接入参考项目的许可与版权声明已保留，详见 [第三方说明](THIRD_PARTY_NOTICES.md)。Saira 字体使用 SIL Open Font License 1.1，许可文件位于 `assets/Saira-OFL.txt`。
+| 文档 | 内容 |
+| --- | --- |
+| [CHANGELOG.md](CHANGELOG.md) | 版本变化 |
+| [VALIDATION.md](VALIDATION.md) | 已验证范围、环境与已知限制 |
+| [发布准备记录](docs/release-preparation.md) | 0.8.2 构建、12 项核心／安装器检查及桌面预览结果 |
+| [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) | 参考实现、字体与第三方许可说明 |
 
-版本变化见 [CHANGELOG.md](CHANGELOG.md)，验证范围见 [VALIDATION.md](VALIDATION.md)。
+## 致谢与许可
+
+- 目标宿主：[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)。
+- 模型目录与槽位接入参考：[Bai-2008/a-better-dsh-codex-effort-slider](https://github.com/Bai-2008/a-better-dsh-codex-effort-slider)，相关上游版权声明已保留。
+- README 的章节组织与操作说明参考上述项目及 [ABING1111/dsh-codex-model-effort-selector](https://github.com/ABING1111/dsh-codex-model-effort-selector)。
+- 代码采用 [MIT License](LICENSE)；Saira 字体采用 [SIL Open Font License 1.1](assets/Saira-OFL.txt)。
