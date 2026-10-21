@@ -44,6 +44,10 @@
 
 ## 安装
 
+任务简报都是废纸？你可以直接告诉deepseek：帮我安装这个！
+
+如果你愿意自己装的话，可以按照以下方法：
+
 先准备好已初始化的 DSH Web，以及能在终端使用的 **Node.js 22 或更高版本**。
 
 从 [Releases](https://github.com/hanagasakugoro-blip/dsh-endfield-slider/releases) 下载运行包：
